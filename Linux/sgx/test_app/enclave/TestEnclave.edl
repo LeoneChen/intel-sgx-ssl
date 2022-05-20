@@ -32,7 +32,7 @@
 /* TestEnclave.edl - Top EDL file. */
 
 enclave {
-    
+from "SGXSanRTEnclave.edl" import *;
 from "sgx_tsgxssl.edl" import *;
 from "sgx_pthread.edl" import *;
     /* 

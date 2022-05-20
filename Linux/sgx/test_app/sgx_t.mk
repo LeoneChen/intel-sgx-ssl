@@ -36,6 +36,9 @@ SGX_MODE ?= HW
 SGX_ARCH ?= x64
 ENCLAVE_DIR=enclave
 
+VCXX = clang++
+VCC = clang
+
 ifeq ($(shell getconf LONG_BIT), 32)
 	SGX_ARCH := x86
 else ifeq ($(findstring -m32, $(CXXFLAGS)), -m32)
@@ -113,7 +116,7 @@ TestEnclave_C_Objects := $(TestEnclave_C_Files:.c=.o)
 
 TestEnclave_Include_Paths := -I. -I$(ENCLAVE_DIR) -I$(SGX_SDK_INC) -I$(SGX_SDK_INC)/tlibc -I$(LIBCXX_INC) -I$(PACKAGE_INC)
 
-Common_C_Cpp_Flags := -DOS_ID=$(OS_ID) $(SGX_COMMON_CFLAGS) -nostdinc -fvisibility=hidden -fpic -fpie -fstack-protector -fno-builtin-printf -Wformat -Wformat-security $(TestEnclave_Include_Paths) -include "tsgxsslio.h"
+Common_C_Cpp_Flags := -DOS_ID=$(OS_ID) $(SGX_COMMON_CFLAGS) -nostdinc -fvisibility=hidden -fpic -fpie -fstack-protector -fno-builtin -Wformat -Wformat-security $(TestEnclave_Include_Paths) -include "tsgxsslio.h" -Xclang -load -Xclang $(SGXSanPath)/output/libSymbolSaverForLTOPass.so -flto
 TestEnclave_C_Flags := $(Common_C_Cpp_Flags) -Wno-implicit-function-declaration -std=c11
 TestEnclave_Cpp_Flags :=  $(Common_C_Cpp_Flags) -std=c++11 -nostdinc++
 
@@ -123,13 +126,16 @@ Security_Link_Flags := -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -pie
 
 TestEnclave_Link_Flags := $(SGX_COMMON_CFLAGS) -Wl,--no-undefined -nostdlib -nodefaultlibs -nostartfiles \
 	$(Security_Link_Flags) \
-	$(SgxSSL_Link_Libraries) -L$(SGX_LIBRARY_PATH) \
-	-Wl,--whole-archive -l$(Trts_Library_Name) -Wl,--no-whole-archive \
+	$(SgxSSL_Link_Libraries) -L$(SGXSanPath)/output -L$(SGX_LIBRARY_PATH) \
+	-Wl,--whole-archive -lSGXSanRTEnclave -l$(Trts_Library_Name) -Wl,--no-whole-archive \
 	-Wl,--start-group -lsgx_tstdc -lsgx_pthread -lsgx_tcxx -lsgx_tcrypto $(TSETJMP_LIB) -l$(Service_Library_Name) -Wl,--end-group \
 	-Wl,-Bstatic -Wl,-Bsymbolic -Wl,--no-undefined \
 	-Wl,-pie,-eenclave_entry -Wl,--export-dynamic  \
 	-Wl,--defsym,__ImageBase=0 \
-	-Wl,--version-script=$(ENCLAVE_DIR)/TestEnclave.lds
+	-Wl,--version-script=$(ENCLAVE_DIR)/TestEnclave.lds \
+	-fuse-ld=lld \
+	-Wl,-mllvm=-load=$(SGXSanPath)/output/libSensitiveLeakSanPass.so \
+	-Wl,-mllvm=-load=$(SGXSanPath)/output/libSGXSanPass.so
 
 
 .PHONY: all test
@@ -144,7 +150,7 @@ test: all
 ######## TestEnclave Objects ########
 
 $(ENCLAVE_DIR)/TestEnclave_t.c: $(SGX_EDGER8R) $(ENCLAVE_DIR)/TestEnclave.edl
-	@cd $(ENCLAVE_DIR) && $(SGX_EDGER8R) --trusted TestEnclave.edl --search-path $(PACKAGE_INC) --search-path $(SGX_SDK_INC)
+	@cd $(ENCLAVE_DIR) && $(SGX_EDGER8R) --trusted TestEnclave.edl --search-path $(PACKAGE_INC) --search-path $(SGX_SDK_INC) --search-path $(SGXSanPath)/output
 	@echo "GEN  =>  $@"
 
 $(ENCLAVE_DIR)/TestEnclave_t.o: $(ENCLAVE_DIR)/TestEnclave_t.c

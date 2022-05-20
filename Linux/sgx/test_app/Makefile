@@ -30,6 +30,8 @@
 #
 include ../buildenv.mk
 
+export SGXSanPath = $(abspath ../../../../../linux-sgx/SGXSan)
+
 all:
 	$(MAKE) -f sgx_u.mk LINUX_SGX_BUILD=$(LINUX_SGX_BUILD) all
 	$(MAKE) -f sgx_t.mk LINUX_SGX_BUILD=$(LINUX_SGX_BUILD) all
