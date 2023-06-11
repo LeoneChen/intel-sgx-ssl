@@ -4,6 +4,9 @@ TestEnclave.so
         g_global_data_sim;
         g_global_data;
         TestEnclave_entry;
+        tsticker_ecall;
+        check_ecall;
+        TSticker__llvm_profile_write_file;
     local:
         *;
 };

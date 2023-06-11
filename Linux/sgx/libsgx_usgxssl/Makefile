@@ -78,6 +78,12 @@ SGX_EDL_FILE := $(PACKAGE_INCLUDE)/sgx_tsgxssl.edl
 Sgx_ussl_Include_Paths := -I. -I$(SGX_SDK_INC)
 
 Sgx_ussl_C_Flags := $(SGX_COMMON_CFLAGS) -fpie -fpic -fstack-protector -Wformat -Wformat-security -Wno-attributes $(Sgx_ussl_Include_Paths)
+ifneq ($(KAFL_FUZZER), 1)
+Sgx_ussl_C_Flags += \
+	-fsanitize-coverage=inline-8bit-counters,bb,no-prune,pc-table,trace-cmp \
+	-fprofile-instr-generate \
+	-fcoverage-mapping
+endif
 Sgx_ussl_Cpp_Flags := $(Sgx_ussl_C_Flags) -std=c++11
 
 Sgx_ussl_Cpp_Files := $(wildcard *.cpp)
