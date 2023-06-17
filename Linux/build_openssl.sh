@@ -39,7 +39,7 @@ echo $SGXSSL_ROOT
 
 BUILD_SSL_LIB=1
 
-OPENSSL_VERSION=`ls $SGXSSL_ROOT/../openssl_source/*1.1.1t.tar.gz | head -1 | grep -o '[^/]*$' | sed -s -- 's/\.tar\.gz//'`
+OPENSSL_VERSION="openssl"
 if [ "$OPENSSL_VERSION" == "" ] 
 then
 	echo "In order to run this script, OpenSSL 1.1.1t tar.gz package must be located in openssl_source/ directory."
@@ -55,8 +55,8 @@ mkdir -p $SGXSSL_ROOT/package/lib64/
 
 # build openssl modules, clean previous openssl dir if it exist
 cd $SGXSSL_ROOT/../openssl_source || exit 1
-rm -rf $OPENSSL_VERSION
-tar xvf $OPENSSL_VERSION.tar.gz || exit 1
+# rm -rf $OPENSSL_VERSION
+# tar xvf $OPENSSL_VERSION.tar.gz || exit 1
 
 # Remove AESBS to support only AESNI and VPAES
 sed -i '/BSAES_ASM/d' $OPENSSL_VERSION/Configure
@@ -144,10 +144,13 @@ cp sgx_config.conf $OPENSSL_VERSION/ || exit 1
 cp x86_64-xlate.pl $OPENSSL_VERSION/crypto/perlasm/ || exit 1
 
 cd $SGXSSL_ROOT/../openssl_source/$OPENSSL_VERSION || exit 1
-perl Configure --config=sgx_config.conf sgx-linux-x86_64 --with-rand-seed=none $ADDITIONAL_CONF $SPACE_OPT $MITIGATION_FLAGS no-idea no-mdc2 no-rc5 no-rc4 no-bf no-ec2m no-camellia no-cast no-srp no-hw no-dso no-shared no-ssl3 no-md2 no-md4 no-ui-console no-stdio no-afalgeng -D_FORTIFY_SOURCE=2 -DGETPID_IS_MEANINGLESS -include$SGXSSL_ROOT/../openssl_source/bypass_to_sgxssl.h || exit 1
+ADDITION_FLAG="-fno-discard-value-names -flegacy-pass-manager -Xclang -load -Xclang $(realpath ${SGXSSL_ROOT}/../../install/lib64/libSGXSanPass.so)"
+perl Configure --config=sgx_config.conf sgx-linux-x86_64 --with-rand-seed=none $ADDITIONAL_CONF $SPACE_OPT $MITIGATION_FLAGS no-idea no-mdc2 no-rc5 no-rc4 no-bf no-ec2m no-camellia no-cast no-srp no-hw no-dso no-shared no-ssl3 no-md2 no-md4 no-ui-console no-stdio no-afalgeng -D_FORTIFY_SOURCE=2 -DGETPID_IS_MEANINGLESS -include$SGXSSL_ROOT/../openssl_source/bypass_to_sgxssl.h "${ADDITION_FLAG}" || exit 1
 
+if ! grep -qF "dummy_ENGINE_set_default_RAND" crypto/engine/tb_rand.c; then
 sed -i 's/ENGINE_set_default_RAND/dummy_ENGINE_set_default_RAND/' crypto/engine/tb_rand.c
-make build_all_generated || exit 1
+fi
+make build_all_generated -j$(nproc) -Orecurse || exit 1
 
 if [[ "$MITIGATION_OPT" == "LOAD" ]]
 then
@@ -167,11 +170,11 @@ then
     cp $SGXSSL_ROOT/../openssl_source/Linux/x86_64cpuid.s       ./crypto/x86_64cpuid.s
 fi
 
-make libcrypto.a || exit 1
+make libcrypto.a -j$(nproc) -Orecurse || exit 1
 cp libcrypto.a $SGXSSL_ROOT/package/lib64/$OUTPUT_LIB || exit 1
 objcopy --rename-section .init=Q6A8dc14f40efc4288a03b32cba4e $SGXSSL_ROOT/package/lib64/$OUTPUT_LIB || exit 1
 if [[ $BUILD_SSL_LIB == 1 ]]; then
-	make libssl.a || exit 1
+	make libssl.a -j$(nproc) -Orecurse || exit 1
 	cp libssl.a $SGXSSL_ROOT/package/lib64/$OUTPUT_SSL_LIB || exit 1
 	objcopy --rename-section .init=Q6A8dc14f40efc4288a03b32cba4e $SGXSSL_ROOT/package/lib64/$OUTPUT_SSL_LIB || exit 1
 fi

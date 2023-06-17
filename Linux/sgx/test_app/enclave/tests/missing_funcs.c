@@ -64,3 +64,8 @@ int puts(const char* str)
 	printf(str);
 	return 0;
 }
+
+int putchar(int ch) {
+	printf("%c", ch);
+	return 0;
+}

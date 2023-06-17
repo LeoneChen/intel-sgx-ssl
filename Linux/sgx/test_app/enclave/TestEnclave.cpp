@@ -1,3 +1,11 @@
+#if defined(__cplusplus)
+extern "C"{
+#endif
+void SGXSanLogEnter(const char *str);
+#if defined(__cplusplus)
+}
+#endif
+#define LogEnter SGXSanLogEnter
 /*
  * Copyright (C) 2011-2021 Intel Corporation. All rights reserved.
  *
@@ -287,6 +295,7 @@ void priv_free(void* addr, const char *file, int line)
 
 void t_sgxssl_call_apis()
 {
+    LogEnter(__func__);
     int ret = 0;
     
     printf("Start tests\n");

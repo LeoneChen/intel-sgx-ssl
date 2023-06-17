@@ -84,6 +84,16 @@ App_Cpp_Objects := $(App_Cpp_Files:.cpp=.o)
 App_Include_Paths := -I$(UNTRUSTED_DIR) -I$(SGX_SDK_INC)
 
 App_C_Flags := $(SGX_COMMON_CFLAGS) -fpic -fpie -fstack-protector -Wformat -Wformat-security -Wno-attributes $(App_Include_Paths)
+ifeq ($(KAFL_FUZZER), 1)
+App_C_Flags += \
+	-flegacy-pass-manager \
+	-Xclang -load -Xclang $(SGX_SDK)/lib64/libSGXFuzzerPass.so
+else
+App_C_Flags += \
+	-flegacy-pass-manager \
+	-Xclang -load -Xclang $(SGX_SDK)/lib64/libSGXFuzzerPass.so \
+	-mllvm --enable-harness=true
+endif
 App_Cpp_Flags := $(App_C_Flags) -std=c++11
 
 ifneq ($(SGX_MODE), HW)
@@ -98,6 +108,26 @@ endif
 Security_Link_Flags := -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -pie
 
 App_Link_Flags := $(SGX_COMMON_CFLAGS) $(Security_Link_Flags) $(SGX_SHARED_LIB_FLAG) -L$(SGX_LIBRARY_PATH) -l$(Urts_Library_Name) -l$(UaeService_Library_Name) -L$(OPENSSL_LIBRARY_PATH) -l$(SgxSSL_Link_Libraries) -lpthread 
+ifeq ($(KAFL_FUZZER), 1)
+App_Link_Flags += \
+	-ldl \
+	-Wl,-rpath=$(SGX_LIBRARY_PATH) \
+	-Wl,-whole-archive -lSGXSanRTApp -Wl,-no-whole-archive \
+	-lSGXFuzzerRT \
+	-lcrypto \
+	-lboost_program_options \
+	-rdynamic \
+	-lnyx_agent
+else
+App_Link_Flags += \
+	-ldl \
+	-Wl,-rpath=$(SGX_LIBRARY_PATH) \
+	-Wl,-whole-archive -lSGXSanRTApp -Wl,-no-whole-archive \
+	-lSGXFuzzerRT \
+	-lcrypto \
+	-lboost_program_options \
+	-rdynamic
+endif
 
 
 .PHONY: all test
@@ -111,7 +141,7 @@ test: all
 ######## App Objects ########
 
 $(UNTRUSTED_DIR)/TestEnclave_u.c: $(SGX_EDGER8R) enclave/TestEnclave.edl
-	@cd $(UNTRUSTED_DIR) && $(SGX_EDGER8R) --untrusted ../enclave/TestEnclave.edl --search-path $(PACKAGE_INC) --search-path $(SGX_SDK_INC)
+	@cd $(UNTRUSTED_DIR) && $(SGX_EDGER8R) --untrusted ../enclave/TestEnclave.edl --search-path $(PACKAGE_INC) --search-path $(SGX_SDK_INC) --dump-parse ../Enclave.edl.json
 	@echo "GEN  =>  $@"
 
 $(UNTRUSTED_DIR)/TestEnclave_u.o: $(UNTRUSTED_DIR)/TestEnclave_u.c

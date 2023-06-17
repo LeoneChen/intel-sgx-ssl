@@ -1,0 +1,15 @@
+*.o
+*.a
+*.so
+*_t.c
+*_u.c
+*_t.h
+*_u.h
+vtune
+*.pem
+Linux/package/include/
+TestApp
+Enclave.edl.json
+workdir*
+InstrumentStatistics.json
+*.cpio.gz
