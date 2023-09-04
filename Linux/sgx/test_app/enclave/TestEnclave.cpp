@@ -1,3 +1,4 @@
+#include "kafl_hc.h"
 /*
  * Copyright (C) 2011-2021 Intel Corporation. All rights reserved.
  *
@@ -272,6 +273,7 @@ void priv_free(void* addr, const char *file, int line)
 
 void t_sgxssl_call_apis()
 {
+    LogEnter(__func__);
     int ret = 0;
     
     printf("Start tests\n");

@@ -1,0 +1,17 @@
+*.edl.json
+*.o
+*.a
+*.so
+*_t.c
+*_u.c
+*_t.h
+*_u.h
+vtune
+*.tmp
+Linux/package/lib64
+Linux/package/include/openssl/
+Linux/package/include/crypto/
+Linux/sgx/test_app/TestApp
+*.log
+TestEnclave.signed.so.*
+ghidra

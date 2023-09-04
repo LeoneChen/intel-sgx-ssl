@@ -1,3 +1,4 @@
+#include "kafl_hc.h"
 /* ====================================================================
  * Copyright (c) 2016 The OpenSSL Project.  All rights reserved.
  *
@@ -119,7 +120,9 @@ static int wait_for_thread(thread_t thread)
 
 void new_thread_func()
 {
+    LogEnter(__func__);
 	printf("in new thread, id: %llu\n",sgx_thread_self());
+    if (func)
 	func();
 	busy_wait = 0;
 }
