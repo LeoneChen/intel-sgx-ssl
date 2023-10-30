@@ -1,3 +1,11 @@
+#if defined(__cplusplus)
+extern "C"{
+#endif
+void SGXSanLogEnter(const char *str);
+#if defined(__cplusplus)
+}
+#endif
+#define LogEnter SGXSanLogEnter
 /* ====================================================================
  * Copyright (c) 2016 The OpenSSL Project.  All rights reserved.
  *
@@ -53,6 +61,7 @@
 #include "threads.h"
 
 #include <sgx.h>
+#include <stdbool.h>
 
 #define fprintf(stream, msg...) printf(msg)
 
@@ -119,7 +128,9 @@ static int wait_for_thread(thread_t thread)
 
 void new_thread_func()
 {
+    LogEnter(__func__);
 	printf("in new thread, id: %llu\n",sgx_thread_self());
+    if (func)
 	func();
 	busy_wait = 0;
 }

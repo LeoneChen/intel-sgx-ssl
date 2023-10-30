@@ -85,6 +85,18 @@ Sgx_ussl_C_Files := $(wildcard *.c)
 
 Sgx_ussl_Cpp_Objects := $(addprefix $(OBJDIR)/, $(Sgx_ussl_Cpp_Files:.cpp=.o))
 Sgx_ussl_C_Objects := $(addprefix $(OBJDIR)/, $(Sgx_ussl_C_Files:.c=.o))
+ifneq ($(KAFL_FUZZER), 1)
+ifeq ($(INST_COV), 1)
+Sgx_ussl_C_Flags += \
+	-fsanitize-coverage=inline-8bit-counters,bb,no-prune,pc-table,trace-cmp \
+	-fprofile-instr-generate \
+	-fcoverage-mapping
+Sgx_ussl_Cpp_Flags += \
+	-fsanitize-coverage=inline-8bit-counters,bb,no-prune,pc-table,trace-cmp \
+	-fprofile-instr-generate \
+	-fcoverage-mapping
+endif
+endif
 $(shell mkdir -p $(OBJDIR))
 
 

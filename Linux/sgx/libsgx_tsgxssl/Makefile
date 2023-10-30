@@ -95,11 +95,27 @@ Sgx_tssl_S_Objects := $(addprefix $(OBJDIR)/, $(Sgx_tssl_S_Files:.S=.o))
 
 Sgx_tssl_Include_Paths := -I. -I$(PACKAGE_INC) -I$(SGX_SDK_INC) -I$(SGX_SDK_INC)/tlibc -I$(LIBCXX_INC)
 
-Common_C_Cpp_Flags := -DOS_ID=$(OS_ID) $(SGX_COMMON_CFLAGS) -nostdinc -fdata-sections -ffunction-sections -Os -Wl,--gc-sections -fvisibility=hidden -fpie -fpic -fstack-protector -fno-builtin-printf -Wformat -Wformat-security $(Sgx_tssl_Include_Paths)
+Common_C_Cpp_Flags := -DOS_ID=$(OS_ID) $(SGX_COMMON_CFLAGS) -fdata-sections -ffunction-sections -Os -Wl,--gc-sections -fvisibility=hidden -fpie -fpic -fstack-protector -fno-builtin-printf -Wformat -Wformat-security $(Sgx_tssl_Include_Paths)
 Sgx_tssl_C_Flags := $(Common_C_Cpp_Flags) -Wno-implicit-function-declaration -std=c11 $(MITIGATION_CFLAGS) $(NO_THREADS_CFLAG)
-Sgx_tssl_Cpp_Flags := $(Common_C_Cpp_Flags) -std=c++11 -nostdinc++ $(MITIGATION_CFLAGS)
+Sgx_tssl_Cpp_Flags := $(Common_C_Cpp_Flags) -std=c++11 $(MITIGATION_CFLAGS)
 ifeq ($(SKIP_INTELCPU_CHECK), TRUE)
 Sgx_tssl_C_Flags += -DSKIP_INTELCPU_CHECK
+endif
+Sgx_tssl_C_Flags += \
+	-fno-discard-value-names -flegacy-pass-manager -Xclang -load -Xclang ${SGX_SDK}/lib64/libSGXSanPass.so
+Sgx_tssl_Cpp_Flags += \
+	-fno-discard-value-names -flegacy-pass-manager -Xclang -load -Xclang ${SGX_SDK}/lib64/libSGXSanPass.so
+ifneq ($(KAFL_FUZZER), 1)
+ifeq ($(INST_COV), 1)
+Sgx_tssl_C_Flags += \
+	-fsanitize-coverage=inline-8bit-counters,bb,no-prune,pc-table,trace-cmp \
+	-fprofile-instr-generate \
+	-fcoverage-mapping
+Sgx_tssl_Cpp_Flags += \
+	-fsanitize-coverage=inline-8bit-counters,bb,no-prune,pc-table,trace-cmp \
+	-fprofile-instr-generate \
+	-fcoverage-mapping
+endif
 endif
 
 $(shell mkdir -p $(OBJDIR))
