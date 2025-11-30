@@ -42,6 +42,7 @@ typedef unsigned int socklen_t;
 
 typedef long int suseconds_t;
 
+#if 0
 struct timeval
 {
     time_t tv_sec;			// seconds
@@ -52,6 +53,7 @@ struct timespec {
     time_t   tv_sec;        /* seconds */
     long     tv_nsec;       /* nanoseconds */
 };
+#endif
 
 struct timeb
 {

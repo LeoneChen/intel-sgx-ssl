@@ -41,6 +41,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
+typedef va_list __va_list;
 
 
 #define	BUF		513	/* Maximum length of numeric string. */

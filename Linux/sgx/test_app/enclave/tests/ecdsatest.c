@@ -525,7 +525,7 @@ int test_builtin(BIO *out)
     return ret;
 }
 
-char* getenv(char* name);
+// char* getenv(char* name);
 
 int ecdsa_test()
 {

@@ -31,6 +31,7 @@
 
 #include <map>
 #include <sgx_spinlock.h>
+#include <cstring>
 #include "tcommon.h"
 #include "sgx_tsgxssl_t.h"
 

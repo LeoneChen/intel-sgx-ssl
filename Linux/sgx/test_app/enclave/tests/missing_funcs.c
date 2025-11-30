@@ -45,20 +45,20 @@ void exit(int status)
 	abort();
 }
 
-int fflush(void* stream)
+int fflush(FILE* stream)
 {
 	return 0;
 }
 
 extern char* sgxssl_getenv(char* name);
 
-char* getenv(char* name)
+char* getenv(const char* name)
 {
 	return sgxssl_getenv(name);
 }
 
 
-extern void printf(const char *fmt, ...);
+// extern void printf(const char *fmt, ...);
 int puts(const char* str)
 {
 	printf(str);

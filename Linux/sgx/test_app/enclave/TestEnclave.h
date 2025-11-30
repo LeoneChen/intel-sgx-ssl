@@ -50,11 +50,11 @@ int BN_print_fp(FILE *fp, const BIGNUM *a);
 extern "C" {
 #endif
 
-void printf(const char *fmt, ...);
+// void printf(const char *fmt, ...);
 
 int puts(const char* str);
-char* getenv(char* name);
-int fflush(void* stream);
+// char* getenv(char* name);
+// int fflush(void* stream);
 void exit(int status);
 
 int rsa_test();

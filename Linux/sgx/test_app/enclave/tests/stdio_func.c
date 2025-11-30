@@ -36,7 +36,7 @@
 #include <openssl/buffer.h>
 #include <openssl/err.h>
 
-extern void printf(const char *fmt, ...);
+// extern void printf(const char *fmt, ...);
 static int print_fp(const char *str, size_t len, void *fp)
 {
     printf("%s", str);
