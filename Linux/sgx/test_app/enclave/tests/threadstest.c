@@ -123,7 +123,8 @@ static int wait_for_thread(thread_t thread)
 void new_thread_func()
 {
 	printf("in new thread, id: %llu\n",sgx_thread_self());
-	func();
+	if (func != NULL)
+		func();
 	busy_wait = 0;
 }
 

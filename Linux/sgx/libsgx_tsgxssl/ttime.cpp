@@ -87,7 +87,7 @@ int sgxssl_gettimeofday(struct timeval *tv, struct timezone *tz)
 
 	if (tv != NULL) {
 		tv->tv_sec = timeptr.time;
-		tv->tv_usec = timeptr.millitm;
+		tv->tv_usec = timeptr.millitm * 1000;
 	}
 
 	FEND;
@@ -113,7 +113,7 @@ int sgxssl_clock_gettime(int clk_id, struct timespec *tp)
 	}
 
 	tp->tv_sec = temp_tv.tv_sec;
-	tp->tv_nsec = temp_tv.tv_usec / 1000;
+	tp->tv_nsec = temp_tv.tv_usec * 1000;
 	FEND;
 
 	return 0;

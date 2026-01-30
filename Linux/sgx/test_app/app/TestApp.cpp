@@ -203,6 +203,8 @@ int ucreate_thread()
 {
 	pthread_t thread;
 	int res = pthread_create(&thread, NULL, thread_test_func, NULL);
+    if (res == 0)
+        pthread_detach(thread);
 	return res;
 }
 

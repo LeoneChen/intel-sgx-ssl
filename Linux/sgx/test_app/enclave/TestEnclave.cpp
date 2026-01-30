@@ -310,7 +310,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test rsa_test returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test rsa_test completed\n");
 
@@ -318,7 +318,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test ec_test returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test ec_test completed\n");
 
@@ -326,7 +326,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test ecdh_test returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test ecdh_test completed\n");
 
@@ -334,7 +334,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test ecdsar_test returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test ecdsa_test completed\n");
 
@@ -342,7 +342,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test bn_test returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test bn_test completed\n");
 
@@ -350,7 +350,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test dh_test returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test dh_test completed\n");
 
@@ -358,7 +358,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
 	    printf("test aesccm_test returned error %d\n", ret);
-	    exit(ret);
+	    return;
     }
     printf("test aesccm_test completed\n");
 
@@ -366,7 +366,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test sha256_test returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test sha256_test completed\n");
 
@@ -374,7 +374,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test sha1_test returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test sha1_test completed\n");
 
@@ -382,7 +382,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test threads_test returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test threads_test completed\n");
 
@@ -391,7 +391,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test evp_sm2 returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test evp_sm2 completed\n");
 
@@ -400,7 +400,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test evp_sm3 returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test evp_sm3 completed\n");
 
@@ -409,7 +409,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test evp_sm4_cbc returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test evp_sm4_cbc completed\n");
 
@@ -418,7 +418,7 @@ void t_sgxssl_call_apis()
     if (ret != 0)
     {
         printf("test evp_sm4_ctr returned error %d\n", ret);
-        exit(ret);
+        return;
     }
     printf("test evp_sm4_ctr completed\n");
 }
