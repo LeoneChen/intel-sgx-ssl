@@ -53,6 +53,9 @@
 #include "threads.h"
 
 #include <sgx.h>
+#if ENCLAVE_FUZZ
+#include <stdbool.h>
+#endif
 
 #define fprintf(stream, msg...) printf(msg)
 
