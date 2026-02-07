@@ -36,7 +36,9 @@
 #include <openssl/buffer.h>
 #include <openssl/err.h>
 
+#if !ENCLAVE_FUZZ
 extern void printf(const char *fmt, ...);
+#endif
 static int print_fp(const char *str, size_t len, void *fp)
 {
     printf("%s", str);

@@ -207,7 +207,11 @@ int ucreate_thread()
 }
 
 /* Application entry */
+#if ENCLAVE_FUZZ
+int no_main(int argc, char *argv[])
+#else
 int main(int argc, char *argv[])
+#endif
 {
     (void)(argc);
     (void)(argv);

@@ -50,6 +50,7 @@
  * printf: 
  *   Invokes OCALL to display the enclave buffer to the terminal.
  */
+#if !ENCLAVE_FUZZ
 void printf(const char *fmt, ...)
 {
     char buf[BUFSIZ] = {'\0'};
@@ -59,6 +60,7 @@ void printf(const char *fmt, ...)
     va_end(ap);
     uprint(buf);
 }
+#endif
 
 typedef void CRYPTO_RWLOCK;
 

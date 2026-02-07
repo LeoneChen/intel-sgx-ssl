@@ -1672,7 +1672,9 @@ static void nistp_tests()
 static const char rnd_seed[] =
     "string to make the random number generator think it has entropy";
 
+#if !ENCLAVE_FUZZ
 char* getenv(char* name);
+#endif
 
 int ec_test()
 {
