@@ -1,0 +1,10 @@
+*.o
+*.a
+*.so
+*_t.c
+*_u.c
+*_t.h
+*_u.h
+*.pem
+Linux/package/include/
+TestApp
