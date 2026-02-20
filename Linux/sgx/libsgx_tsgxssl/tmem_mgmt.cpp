@@ -34,6 +34,10 @@
 #include "tcommon.h"
 #include "sgx_tsgxssl_t.h"
 
+#if ENCLAVE_FUZZ
+#include <cstring>
+#endif
+
 
 #define FAKE_DEV_ZERO_FD	99
 #define PAGE_SIZE 			((uint64_t)0x1000) 	// 4096 Bytes

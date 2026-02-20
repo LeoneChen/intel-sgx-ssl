@@ -45,20 +45,30 @@ void exit(int status)
 	abort();
 }
 
+#if ENCLAVE_FUZZ
+int fflush(FILE* stream)
+#else
 int fflush(void* stream)
+#endif
 {
 	return 0;
 }
 
 extern char* sgxssl_getenv(char* name);
 
+#if ENCLAVE_FUZZ
+char* getenv(const char* name)
+#else
 char* getenv(char* name)
+#endif
 {
 	return sgxssl_getenv(name);
 }
 
 
+#if !ENCLAVE_FUZZ
 extern void printf(const char *fmt, ...);
+#endif
 int puts(const char* str)
 {
 	printf(str);

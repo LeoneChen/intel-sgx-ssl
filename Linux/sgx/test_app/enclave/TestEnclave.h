@@ -50,11 +50,15 @@ int BN_print_fp(FILE *fp, const BIGNUM *a);
 extern "C" {
 #endif
 
+#if !ENCLAVE_FUZZ
 void printf(const char *fmt, ...);
+#endif
 
 int puts(const char* str);
+#if !ENCLAVE_FUZZ
 char* getenv(char* name);
 int fflush(void* stream);
+#endif
 void exit(int status);
 
 int rsa_test();

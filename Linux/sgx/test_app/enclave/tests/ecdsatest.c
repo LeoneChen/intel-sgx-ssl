@@ -525,7 +525,9 @@ int test_builtin(BIO *out)
     return ret;
 }
 
+#if !ENCLAVE_FUZZ
 char* getenv(char* name);
+#endif
 
 int ecdsa_test()
 {

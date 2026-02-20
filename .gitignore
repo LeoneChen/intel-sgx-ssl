@@ -1,0 +1,6 @@
+*.o
+*.a
+*_[tu].[ch]
+Linux/package/include/
+TestApp
+TestEnclave.so

@@ -33,6 +33,7 @@ include ../buildenv.mk
 ######## SGX SDK Settings ########
 SGX_MODE ?= HW
 SGX_ARCH ?= x64
+ENCLAVE_FUZZ ?= 0
 
 
 ifeq ($(shell getconf LONG_BIT), 32)
@@ -95,11 +96,29 @@ Sgx_tssl_S_Objects := $(addprefix $(OBJDIR)/, $(Sgx_tssl_S_Files:.S=.o))
 
 Sgx_tssl_Include_Paths := -I. -I$(PACKAGE_INC) -I$(SGX_SDK_INC) -I$(SGX_SDK_INC)/tlibc -I$(LIBCXX_INC)
 
+ifeq ($(ENCLAVE_FUZZ), 1)
+Common_C_Cpp_Flags := -DOS_ID=$(OS_ID) $(SGX_COMMON_CFLAGS) -fdata-sections -ffunction-sections -Os -Wl,--gc-sections -fvisibility=hidden -fpie -fpic -fstack-protector -fno-builtin-printf -Wformat -Wformat-security $(Sgx_tssl_Include_Paths)
+else
 Common_C_Cpp_Flags := -DOS_ID=$(OS_ID) $(SGX_COMMON_CFLAGS) -nostdinc -fdata-sections -ffunction-sections -Os -Wl,--gc-sections -fvisibility=hidden -fpie -fpic -fstack-protector -fno-builtin-printf -Wformat -Wformat-security $(Sgx_tssl_Include_Paths)
+endif
 Sgx_tssl_C_Flags := $(Common_C_Cpp_Flags) -Wno-implicit-function-declaration -std=c11 $(MITIGATION_CFLAGS) $(NO_THREADS_CFLAG)
+ifeq ($(ENCLAVE_FUZZ), 1)
+Sgx_tssl_Cpp_Flags := $(Common_C_Cpp_Flags) -std=c++11 $(MITIGATION_CFLAGS)
+else
 Sgx_tssl_Cpp_Flags := $(Common_C_Cpp_Flags) -std=c++11 -nostdinc++ $(MITIGATION_CFLAGS)
+endif
 ifeq ($(SKIP_INTELCPU_CHECK), TRUE)
 Sgx_tssl_C_Flags += -DSKIP_INTELCPU_CHECK
+endif
+ifeq ($(ENCLAVE_FUZZ), 1)
+	Sgx_tssl_C_Flags += \
+		-DENCLAVE_FUZZ=1 \
+		-fno-discard-value-names -flegacy-pass-manager -Xclang -load -Xclang ${SGX_SDK}/lib64/libSGXSanPass.so \
+		-fsanitize-coverage=inline-8bit-counters,bb,no-prune,pc-table,trace-cmp
+	Sgx_tssl_Cpp_Flags += \
+		-DENCLAVE_FUZZ=1 \
+		-fno-discard-value-names -flegacy-pass-manager -Xclang -load -Xclang ${SGX_SDK}/lib64/libSGXSanPass.so \
+		-fsanitize-coverage=inline-8bit-counters,bb,no-prune,pc-table,trace-cmp
 endif
 
 $(shell mkdir -p $(OBJDIR))
