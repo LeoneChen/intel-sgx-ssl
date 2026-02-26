@@ -79,9 +79,11 @@ endif
 
 
 App_Cpp_Files := $(UNTRUSTED_DIR)/TestApp.cpp
+App_Cpp_Files += $(UNTRUSTED_DIR)/harness.cpp
 App_Cpp_Objects := $(App_Cpp_Files:.cpp=.o)
 
 App_Include_Paths := -I$(UNTRUSTED_DIR) -I$(SGX_SDK_INC)
+App_Include_Paths += -I/usr/lib/llvm-13/lib/clang/13.0.1/include/fuzzer
 
 App_C_Flags := $(SGX_COMMON_CFLAGS) -fpic -fpie -fstack-protector -Wformat -Wformat-security -Wno-attributes $(App_Include_Paths)
 App_Cpp_Flags := $(App_C_Flags) -std=c++11
@@ -99,6 +101,10 @@ Security_Link_Flags := -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -pie
 
 App_Link_Flags := $(SGX_COMMON_CFLAGS) $(Security_Link_Flags) $(SGX_SHARED_LIB_FLAG) -L$(SGX_LIBRARY_PATH) -l$(Urts_Library_Name) -l$(UaeService_Library_Name) -L$(OPENSSL_LIBRARY_PATH) -l$(SgxSSL_Link_Libraries) -lpthread 
 
+App_Link_Flags += \
+	-ldl \
+	-Wl,-whole-archive -lSGXSanRTApp -Wl,-no-whole-archive \
+	-rdynamic
 
 .PHONY: all test
 
@@ -117,6 +123,11 @@ $(UNTRUSTED_DIR)/TestEnclave_u.c: $(SGX_EDGER8R) enclave/TestEnclave.edl
 $(UNTRUSTED_DIR)/TestEnclave_u.o: $(UNTRUSTED_DIR)/TestEnclave_u.c
 	$(VCC) $(App_C_Flags) -c $< -o $@
 	@echo "CC   <=  $<"
+
+$(UNTRUSTED_DIR)/harness.cpp:
+	@cd $(UNTRUSTED_DIR) && $(SGX_EDGER8R) --untrusted ../enclave/TestEnclave.edl --search-path $(PACKAGE_INC) --search-path $(SGX_SDK_INC) --gen-harness
+	@clang-format-13 -i $@
+	@echo "GEN  =>  $@"
 
 $(UNTRUSTED_DIR)/%.o: $(UNTRUSTED_DIR)/%.cpp $(UNTRUSTED_DIR)/TestEnclave_u.c
 	$(VCXX) $(App_Cpp_Flags) -c $< -o $@
