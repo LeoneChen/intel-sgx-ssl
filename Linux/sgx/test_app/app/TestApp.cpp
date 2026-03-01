@@ -207,7 +207,7 @@ int ucreate_thread()
 }
 
 /* Application entry */
-int main(int argc, char *argv[])
+int no_main(int argc, char *argv[])
 {
     (void)(argc);
     (void)(argv);

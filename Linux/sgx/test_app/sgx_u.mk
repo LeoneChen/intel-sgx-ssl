@@ -79,9 +79,11 @@ endif
 
 
 App_Cpp_Files := $(UNTRUSTED_DIR)/TestApp.cpp
+App_Cpp_Files += $(UNTRUSTED_DIR)/harness.cpp
 App_Cpp_Objects := $(App_Cpp_Files:.cpp=.o)
 
 App_Include_Paths := -I$(UNTRUSTED_DIR) -I$(SGX_SDK_INC)
+App_Include_Paths += -I/usr/lib/llvm-13/lib/clang/13.0.1/include/fuzzer
 
 App_C_Flags := $(SGX_COMMON_CFLAGS) -fpic -fpie -fstack-protector -Wformat -Wformat-security -Wno-attributes $(App_Include_Paths)
 App_Cpp_Flags := $(App_C_Flags) -std=c++11
@@ -99,6 +101,7 @@ Security_Link_Flags := -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -pie
 
 App_Link_Flags := $(SGX_COMMON_CFLAGS) $(Security_Link_Flags) $(SGX_SHARED_LIB_FLAG) -L$(SGX_LIBRARY_PATH) -l$(Urts_Library_Name) -l$(UaeService_Library_Name) -L$(OPENSSL_LIBRARY_PATH) -l$(SgxSSL_Link_Libraries) -lpthread 
 
+App_Link_Flags += -ldl -Wl,-whole-archive -lSGXSanRTApp -Wl,-no-whole-archive -L/home/leone/EnclaveFuzz1/install/llvm-project/lib/clang/13.0.1/lib/linux -lclang_rt.fuzzer-x86_64
 
 .PHONY: all test
 

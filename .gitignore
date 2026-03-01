@@ -1,0 +1,7 @@
+*.o
+*.a
+*.so
+*_[tu].[ch]
+*.pem
+Linux/package/include/
+TestApp
