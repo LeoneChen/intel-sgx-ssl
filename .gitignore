@@ -1,0 +1,8 @@
+*.o
+*.a
+*_[tu].[ch]
+Linux/sgx/test_app/TestEnclave.signed.so
+Linux/sgx/test_app/TestEnclave.so
+Linux/sgx/test_app/enclave/TestEnclave_private_test.pem
+Linux/package/include/
+TestApp

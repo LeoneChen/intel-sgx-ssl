@@ -205,7 +205,7 @@
 #endif
 
 #define pipe sgxssl_pipe
-#define __read_alias sgxssl_read
+#define __read_chk sgxssl_read
 #define write sgxssl_write
 #define close sgxssl_close
 
